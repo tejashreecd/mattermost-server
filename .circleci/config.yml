@@ -58,6 +58,7 @@ jobs:
           name: Run Tests
           command: |
             ls -la
+            cat Makefile
             mkdir -p client/plugins
             docker run -it --net circleci_mm-test \
               --env TEST_DATABASE_MYSQL_DSN="mmuser:mostest@tcp(mysql:3306)/mattermost_test?charset=utf8mb4,utf8\u0026readTimeout=30s\u0026writeTimeout=30s" \
