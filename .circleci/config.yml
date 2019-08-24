@@ -6,7 +6,7 @@ executors:
     docker:
       - image: mattermost/mattermost-build-webapp:oct-2-2018
   ubuntu:
-    working_directory: ~/go/src/github.com/mattermost/
+    working_directory: ~/go/src/github.com/mattermost/mattermost-server
     machine:
       image: "ubuntu-1604:201903-01"
     environment:
