@@ -6,7 +6,7 @@ executors:
     docker:
       - image: mattermost/mattermost-build-webapp:oct-2-2018
   ubuntu:
-    working_directory: ~/go/src/github.com/mattermost/
+    working_directory: /go/src/github.com/mattermost/
     machine:
       image: "ubuntu-1604:201903-01"
     environment:
@@ -30,7 +30,6 @@ jobs:
       - persist_to_workspace:
           root: /go/src/github.com/mattermost
           paths:
-            - mattermost-server
             - mattermost-webapp
   test:
     executor:
@@ -38,7 +37,7 @@ jobs:
     steps:
       - checkout
       - attach_workspace:
-          at: ~/go/src/github.com/mattermost/
+          at: /go/src/github.com/mattermost/
       - run:
           name: Run Docker compose
           command: |
@@ -58,7 +57,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            ls -la ~/go/src/github.com/mattermost/mattermost-server
+            ls -la /go/src/github.com/mattermost/mattermost-server
             echo "-----See here-----"
             cat Makefile
             mkdir -p client/plugins
@@ -77,8 +76,8 @@ jobs:
               --env MM_EMAILSETTINGS_SMTPSERVER=inbucket \
               --env MM_EMAILSETTINGS_SMTPPORT=10025 \
               --env MM_ELASTICSEARCHSETTINGS_CONNECTIONURL=http://elasticsearch:9200 \
-              -v ~/go/src:~/go/src \
-              -w ~/go/src/github.com/mattermost/mattermost-server \
+              -v /go/src:/go/src \
+              -w /go/src/github.com/mattermost/mattermost-server \
               mattermost/mattermost-build-server:feb-28-2019 \
               bash -c 'make test-server BUILD_NUMBER="$CIRCLE_BRANCH-$CIRCLE_PREVIOUS_BUILD_NUM" TESTFLAGS= TESTFLAGSEE='
           no_output_timeout: 1h
@@ -94,16 +93,16 @@ jobs:
             docker stats -a --no-stream > logs/docker_stats
             tar -czvf logs/docker_logs.tar.gz logs/docker-compose_logs logs/docker_ps logs/docker_stats
       - store_artifacts:
-          path: ~/go/src/github.com/mattermost/mattermost-server/build/logs
+          path: /go/src/github.com/mattermost/mattermost-server/build/logs
       - run:
           when: always
           command: |
             mkdir -p test-results
             cp report.xml test-results
       - store_test_results:
-          path: ~/go/src/github.com/mattermost/mattermost-server/test-results/
+          path: /go/src/github.com/mattermost/mattermost-server/test-results/
       - store_artifacts:
-          path: ~/go/src/github.com/mattermost/mattermost-server/test-results/
+          path: /go/src/github.com/mattermost/mattermost-server/test-results/
 
 workflows:
   version: 2
