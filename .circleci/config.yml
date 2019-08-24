@@ -30,16 +30,18 @@ jobs:
       - persist_to_workspace:
           root: /go/src/github.com/mattermost
           paths:
+            - mattermost-server
             - mattermost-webapp
   test:
     executor:
       name: ubuntu
     steps:
       - checkout
+      - attach_workspace:
+          at: ~/go/src/github.com/mattermost
       - run:
           name: Run Docker compose
           command: |
-            ls -la
             cd build
             docker-compose --no-ansi run --rm start_dependencies
             cat ../tests/test-data.ldif | docker-compose --no-ansi exec -T openldap bash -c 'ldapadd -x -D "cn=admin,dc=mm,dc=test,dc=com" -w mostest';
@@ -56,8 +58,6 @@ jobs:
           name: Run Tests
           command: |
             pwd
-            echo "-----See here-----"
-            cat Makefile
             mkdir -p client/plugins
             docker run -it --net circleci_mm-test \
               --env TEST_DATABASE_MYSQL_DSN="mmuser:mostest@tcp(mysql:3306)/mattermost_test?charset=utf8mb4,utf8\u0026readTimeout=30s\u0026writeTimeout=30s" \
@@ -106,4 +106,7 @@ workflows:
   version: 2
   untagged-build:
     jobs:
-      - test
+      - setup
+      - test:
+          requires:
+            - setup
