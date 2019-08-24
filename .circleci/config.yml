@@ -58,7 +58,6 @@ jobs:
           name: Run Tests
           command: |
             ls -la
-            cd mattermost-server
             mkdir -p client/plugins
             docker run -it --net circleci_mm-test \
               --env TEST_DATABASE_MYSQL_DSN="mmuser:mostest@tcp(mysql:3306)/mattermost_test?charset=utf8mb4,utf8\u0026readTimeout=30s\u0026writeTimeout=30s" \
@@ -96,7 +95,6 @@ jobs:
       - run:
           when: always
           command: |
-            cd mattermost-server
             mkdir -p test-results
             cp report.xml test-results
       - store_test_results:
