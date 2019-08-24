@@ -30,6 +30,7 @@ jobs:
       - persist_to_workspace:
           root: /go/src/github.com/mattermost
           paths:
+            - mattermost-server
             - mattermost-webapp
   test:
     executor:
@@ -78,7 +79,7 @@ jobs:
               -v ~/go/src:/go/src \
               -w /go/src/github.com/mattermost/mattermost-server \
               mattermost/mattermost-build-server:feb-28-2019 \
-            bash -c 'make test-server BUILD_NUMBER="$CIRCLE_BRANCH-$CIRCLE_PREVIOUS_BUILD_NUM" TESTFLAGS= TESTFLAGSEE='
+              bash -c 'make test-server BUILD_NUMBER="$CIRCLE_BRANCH-$CIRCLE_PREVIOUS_BUILD_NUM" TESTFLAGS= TESTFLAGSEE='
           no_output_timeout: 1h
       - run:
           name: Capture docker logs
