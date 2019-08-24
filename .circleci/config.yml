@@ -20,7 +20,7 @@ setup:
           paths:
             - mattermost-server
             - mattermost-webapp
-....
+
 test:
     machine:
       image: ubuntu-1604:201903-01
@@ -94,4 +94,3 @@ test:
           path: ~/go/src/github.com/mattermost/mattermost-server/test-results/
       - store_artifacts:
           path: ~/go/src/github.com/mattermost/mattermost-server/test-results/
-...
