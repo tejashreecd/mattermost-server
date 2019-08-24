@@ -55,7 +55,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            ls -la /go/src/github.com/mattermost/mattermost-server
+            ls -la ~/go/src/github.com/mattermost/mattermost-server
             echo "-----See here-----"
             cat Makefile
             mkdir -p client/plugins
