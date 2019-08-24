@@ -6,7 +6,7 @@ executors:
     docker:
       - image: mattermost/mattermost-build-webapp:oct-2-2018
   ubuntu:
-    working_directory: /go/src/github.com/mattermost/
+    working_directory: ~/go/src/github.com/mattermost/
     machine:
       image: "ubuntu-1604:201903-01"
     environment:
@@ -36,8 +36,6 @@ jobs:
       name: ubuntu
     steps:
       - checkout
-      - attach_workspace:
-          at: /go/src/github.com/mattermost/
       - run:
           name: Run Docker compose
           command: |
@@ -108,7 +106,4 @@ workflows:
   version: 2
   untagged-build:
     jobs:
-      - setup
-      - test:
-          requires:
-            - setup
+      - test
