@@ -6,7 +6,7 @@ executors:
     docker:
       - image: mattermost/mattermost-build-webapp:oct-2-2018
   ubuntu:
-    working_directory: ~/go/src/github.com/mattermost/enterprise
+    working_directory: ~/go/src/github.com/mattermost/
     machine:
       image: "ubuntu-1604:201903-01"
     environment:
@@ -30,7 +30,6 @@ jobs:
       - persist_to_workspace:
           root: /go/src/github.com/mattermost
           paths:
-            - mattermost-server
             - mattermost-webapp
   test:
     executor:
@@ -43,7 +42,7 @@ jobs:
           name: Run Docker compose
           command: |
             ls -la
-            cd ../mattermost-server/build
+            cd mattermost-server/build
             docker-compose --no-ansi run --rm start_dependencies
             cat ../tests/test-data.ldif | docker-compose --no-ansi exec -T openldap bash -c 'ldapadd -x -D "cn=admin,dc=mm,dc=test,dc=com" -w mostest';
             docker-compose --no-ansi exec -T minio sh -c 'mkdir -p /data/mattermost-test';
@@ -58,7 +57,7 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            cd ../mattermost-server
+            cd mattermost-server
             mkdir -p client/plugins
             docker run -it --net circleci_mm-test \
               --env TEST_DATABASE_MYSQL_DSN="mmuser:mostest@tcp(mysql:3306)/mattermost_test?charset=utf8mb4,utf8\u0026readTimeout=30s\u0026writeTimeout=30s" \
@@ -84,7 +83,7 @@ jobs:
           name: Capture docker logs
           when: always
           command: |
-            cd ../mattermost-server/build
+            cd mattermost-server/build
             # Capture docker logs
             mkdir -p logs
             docker-compose logs --tail="all" -t --no-color > logs/docker-compose_logs
@@ -96,7 +95,7 @@ jobs:
       - run:
           when: always
           command: |
-            cd ../mattermost-server/
+            cd mattermost-server/
             mkdir -p test-results
             cp report.xml test-results
       - store_test_results:
