@@ -151,5 +151,5 @@ workflows:
             - setup
       - build:
           requires:
-            - setup
+            - test
           
