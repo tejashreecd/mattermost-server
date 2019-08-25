@@ -120,6 +120,9 @@ workflows:
   untagged-build:
     jobs:
       - setup
-      - test:
+      - check-i18n:
           requires:
             - setup
+      - test:
+          requires:
+            - check-i18n
