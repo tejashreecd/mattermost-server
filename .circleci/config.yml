@@ -48,8 +48,27 @@ jobs:
               -v ~/go/src:/go/src \
               -w /go/src/github.com/mattermost/mattermost-server \
               mattermost/mattermost-build-server:feb-28-2019 \
-              bash -c 'cp i18n/en.json /tmp/en.json; make i18n-extract; diff /tmp/en.json i18n/en.json;'
-  
+              bash -c 'cd /go/src/github.com/mattermost/mattermost-server; cp i18n/en.json /tmp/en.json; make i18n-extract; diff /tmp/en.json i18n/en.json;'
+  build:
+    executor:
+      name: ubuntu
+    steps:
+      - checkout
+      - attach_workspace:
+          at: ~/go/src/github.com/mattermost/
+      - run:
+          name: Build
+          command: |
+            docker run -it \
+              -v ~/go/src:/go/src \
+              -w /go/src/github.com/mattermost/mattermost-server \
+              mattermost/mattermost-build-server:feb-28-2019 \
+              bash -c 'cd /go/src/github.com/mattermost/mattermost-server;
+                            make config-reset;
+                            make check-style BUILD_NUMBER='${BRANCH_NAME}-${BUILD_NUMBER}';
+                            make build BUILD_NUMBER='${BRANCH_NAME}-${BUILD_NUMBER}';
+                            make package BUILD_NUMBER='${BRANCH_NAME}-${BUILD_NUMBER}'' 
+
   test:
     executor:
       name: ubuntu
