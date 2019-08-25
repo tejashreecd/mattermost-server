@@ -35,7 +35,7 @@ jobs:
 
   check-i18n:
     executor:
-      name: default
+      name: ubuntu
     steps:
       - run:
           name: Check i18n
