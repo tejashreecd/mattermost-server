@@ -32,6 +32,20 @@ jobs:
           paths:
             - mattermost-server
             - mattermost-webapp
+
+  check-i18n:
+    executor:
+      name: default
+    steps:
+      - run:
+          name: Check i18n
+          command: |
+            docker run -it
+              -v ~/go/src:/go/src \
+              -w /go/src/github.com/mattermost/mattermost-server \
+              mattermost/mattermost-build-server:feb-28-2019 \
+              bash -c 'cp i18n/en.json /tmp/en.json; make i18n-extract; diff /tmp/en.json i18n/en.json;'
+
   test:
     executor:
       name: ubuntu
@@ -57,7 +71,6 @@ jobs:
       - run:
           name: Run Tests
           command: |
-            pwd
             mkdir -p client/plugins
             docker run -it --net circleci_mm-test \
               --env TEST_DATABASE_MYSQL_DSN="mmuser:mostest@tcp(mysql:3306)/mattermost_test?charset=utf8mb4,utf8\u0026readTimeout=30s\u0026writeTimeout=30s" \
