@@ -128,4 +128,4 @@ workflows:
             - setup
       - test:
           requires:
-            - check-i18n
+            - setup
