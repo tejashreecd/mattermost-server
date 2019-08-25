@@ -44,10 +44,12 @@ jobs:
           name: Check i18n
           command: |
             pwd
-            cp i18n/en.json /tmp/en.json 
-            make i18n-extract
-            diff /tmp/en.json i18n/en.json
-
+            docker run -it \
+              -v ~/go/src:/go/src \
+              -w /go/src/github.com/mattermost/mattermost-server \
+              mattermost/mattermost-build-server:feb-28-2019 \
+              bash -c 'cp i18n/en.json /tmp/en.json; make i18n-extract; diff /tmp/en.json i18n/en.json;'
+  
   test:
     executor:
       name: ubuntu
