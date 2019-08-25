@@ -43,6 +43,7 @@ jobs:
       - run:
           name: Check i18n
           command: |
+            pwd
             cp i18n/en.json /tmp/en.json 
             make i18n-extract
             diff /tmp/en.json i18n/en.json
