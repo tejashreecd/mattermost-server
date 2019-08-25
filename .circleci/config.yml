@@ -149,3 +149,7 @@ workflows:
       - test:
           requires:
             - setup
+      - build:
+          requires:
+            - setup
+          
