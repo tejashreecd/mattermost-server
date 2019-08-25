@@ -65,9 +65,9 @@ jobs:
               mattermost/mattermost-build-server:feb-28-2019 \
               bash -c 'cd /go/src/github.com/mattermost/mattermost-server;
                             make config-reset;
-                            make check-style BUILD_NUMBER='${BRANCH_NAME}-${BUILD_NUMBER}';
-                            make build BUILD_NUMBER='${BRANCH_NAME}-${BUILD_NUMBER}';
-                            make package BUILD_NUMBER='${BRANCH_NAME}-${BUILD_NUMBER}'' 
+                            make check-style BUILD_NUMBER='${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}';
+                            make build BUILD_NUMBER='${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}';
+                            make package BUILD_NUMBER='${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}''
 
   test:
     executor:
