@@ -37,6 +37,7 @@ jobs:
     executor:
       name: ubuntu
     steps:
+      - checkout
       - run:
           name: Check i18n
           command: |
