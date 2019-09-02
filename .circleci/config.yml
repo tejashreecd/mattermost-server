@@ -50,25 +50,29 @@ jobs:
               mattermost/mattermost-build-server:feb-28-2019 \
               bash -c 'cd /go/src/github.com/mattermost/mattermost-server; cp i18n/en.json /tmp/en.json; make i18n-extract; diff /tmp/en.json i18n/en.json;'
   build:
-    executor:
-      name: ubuntu
+    docker:
+      - image: mattermost/mattermost-build-server:feb-28-2019
+    working_directory: /go/src/github.com/mattermost/mattermost-server
     steps:
-      - checkout
       - attach_workspace:
-          at: ~/go/src/github.com/mattermost/
+          at: /go/src/github.com/mattermost/
       - run:
-          name: Build
           command: |
-            docker run -it \
-              -v ~/go/src:/go/src \
-              -w /go/src/github.com/mattermost/mattermost-server \
-              mattermost/mattermost-build-server:feb-28-2019 \
-              bash -c 'cd /go/src/github.com/mattermost/mattermost-server;
-                            make config-reset;
-                            make check-style BUILD_NUMBER='${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}';
-                            make build BUILD_NUMBER='${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}';
-                            make package BUILD_NUMBER='${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}''
-
+            make config-reset
+            make check-style BUILD_NUMBER='${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}'
+            GOFLAGS=-p=8 make build BUILD_NUMBER='${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}'
+            GOFLAGS=-p=8 make package BUILD_NUMBER='${CIRCLE_BRANCH}-${CIRCLE_BUILD_NUM}'
+      - store_artifacts:
+          path: /go/src/github.com/mattermost/mattermost-server/dist/mattermost-team-linux-amd64.tar.gz
+      - store_artifacts:
+          path: /go/src/github.com/mattermost/mattermost-server/dist/mattermost-team-osx-amd64.tar.gz
+      - store_artifacts:
+          path: /go/src/github.com/mattermost/mattermost-server/dist/mattermost-team-windows-amd64.zip
+      - persist_to_workspace:
+          root: /go/src/github.com/mattermost
+          paths:
+            - mattermost-server
+            - mattermost-webapp
   test:
     executor:
       name: ubuntu
@@ -89,8 +93,8 @@ jobs:
           name: Wait for docker compose
           command: |
             sleep 5
-            docker run --net circleci_mm-test appropriate/curl:latest sh -c "until curl --max-time 5 --output - http://mysql:3306; do echo waiting for mysql; sleep 5; done;"
-            docker run --net circleci_mm-test appropriate/curl:latest sh -c "until curl --max-time 5 --output - http://elasticsearch:9200; do echo waiting for elasticsearch; sleep 5; done;"
+            docker run --rm --net circleci_mm-test appropriate/curl:latest sh -c "until curl --max-time 5 --output - http://mysql:3306; do echo waiting for mysql; sleep 5; done;"
+            docker run --rm --net circleci_mm-test appropriate/curl:latest sh -c "until curl --max-time 5 --output - http://elasticsearch:9200; do echo waiting for elasticsearch; sleep 5; done;"
       - run:
           name: Run Tests
           command: |
@@ -120,6 +124,7 @@ jobs:
           when: always
           command: |
             cd build
+            ls -la
             # Capture docker logs
             mkdir -p logs
             docker-compose logs --tail="all" -t --no-color > logs/docker-compose_logs
@@ -131,6 +136,7 @@ jobs:
       - run:
           when: always
           command: |
+            ls -la
             mkdir -p test-results
             cp report.xml test-results
       - store_test_results:
@@ -143,7 +149,7 @@ jobs:
       name: ubuntu
     steps:
         - run:
-            name: Build Dcoker image
+            name: Build Docker image
             command: |
               ls -la
 workflows:
@@ -160,7 +166,3 @@ workflows:
       - build:
           requires:
             - test
-      - build-docker:
-          requires:
-            - build
-
